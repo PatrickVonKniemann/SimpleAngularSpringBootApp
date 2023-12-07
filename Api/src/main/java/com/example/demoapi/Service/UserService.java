@@ -42,7 +42,6 @@ public class UserService {
         AppUser appUser = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found"));
         appUser.setName(appUserUpdateDTO.getName());
-        // Update other properties as necessary
         AppUser updatedAppUser = userRepository.save(appUser);
         return convertToReadDTO(updatedAppUser);
     }

@@ -4,6 +4,8 @@ public class NoteUpdateDTO {
 
     private String content;
 
+    public NoteUpdateDTO() {
+    }
     public NoteUpdateDTO(String content) {
         this.content = content;
     }

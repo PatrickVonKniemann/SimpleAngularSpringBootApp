@@ -4,6 +4,9 @@ public class NoteCreateDTO {
     private String content;
     private Long appUserId;
 
+    public NoteCreateDTO() {
+    }
+
     public NoteCreateDTO(String content, Long appUserId) {
         this.content = content;
         this.appUserId = appUserId;
