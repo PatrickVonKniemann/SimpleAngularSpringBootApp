@@ -1,21 +1,22 @@
 package com.example.demoapi.Service;
 
-import com.example.demoapi.Models.Dtos.AppUserCreateDTO;
-import com.example.demoapi.Models.Dtos.AppUserReadDTO;
-import com.example.demoapi.Models.Dtos.AppUserUpdateDTO;
-import com.example.demoapi.Models.Dtos.NoteReadDTO;
+import com.example.demoapi.Models.Dtos.*;
+import com.example.demoapi.Models.JwtTokenUtil;
 import com.example.demoapi.Models.Note;
 import com.example.demoapi.Repository.UserRepository;
 import com.example.demoapi.Models.AppUser;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.naming.AuthenticationException;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
 public class UserService {
-
+    @Autowired
+    private JwtTokenUtil jwtTokenUtil;
     private final UserRepository userRepository;
 
     public UserService(UserRepository userRepository) {
@@ -34,7 +35,7 @@ public class UserService {
     }
 
     public AppUserReadDTO addItem(AppUserCreateDTO appUserCreateDTO) {
-        AppUser appUser = new AppUser();
+        AppUser appUser = new AppUser(password);
         appUser.setName(appUserCreateDTO.getName());
         AppUser savedAppUser = userRepository.save(appUser);
         return convertToReadDTO(savedAppUser);
@@ -67,4 +68,39 @@ public class UserService {
         return noteReadDTO;
     }
 
+
+    public Optional<AppUser> getItemByName(String name) {
+        return this.userRepository.findByName(name);
+    }
+
+    public LoginResponseDTO authenticate(LoginRequestDTO loginRequest) throws Exception {
+        Optional<AppUser> appUserOpt = userRepository.findByName(loginRequest.getUsername());
+
+        if (!appUserOpt.isPresent() || !passwordMatches(loginRequest.getPassword(), appUserOpt.get().getPassword())) {
+            throw new AuthenticationException("Wrong credentials");
+        }
+
+        // Generate token or perform additional authentication logic here
+        String token = generateToken(appUserOpt.get());
+
+        LoginResponseDTO response = new LoginResponseDTO();
+        response.setToken(token);
+        // set other necessary fields in the response
+
+        return response;
+
+    }
+
+    private boolean passwordMatches(String rawPassword, String storedPassword) {
+        return rawPassword.equals(storedPassword);
+    }
+//    private boolean passwordMatches(String rawPassword, String storedHashedPassword) {
+//        // Compare the raw password after hashing with the stored hashed password
+//        // You should use a password encoder here, like BCryptPasswordEncoder
+//        return passwordEncoder.matches(rawPassword, storedHashedPassword);
+//    }
+
+    private String generateToken(AppUser user) {
+        return jwtTokenUtil.generateToken(user);
+    }
 }

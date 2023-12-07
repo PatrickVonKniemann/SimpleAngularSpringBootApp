@@ -1,8 +1,6 @@
 package com.example.demoapi.Controllers;
 
-import com.example.demoapi.Models.Dtos.AppUserCreateDTO;
-import com.example.demoapi.Models.Dtos.AppUserReadDTO;
-import com.example.demoapi.Models.Dtos.AppUserUpdateDTO;
+import com.example.demoapi.Models.Dtos.*;
 import com.example.demoapi.Service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -49,6 +47,12 @@ public class UserController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
         userService.deleteUser(id);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<LoginResponseDTO> login(@RequestBody LoginRequestDTO loginRequest) throws Exception {
+        userService.authenticate(loginRequest);
         return ResponseEntity.ok().build();
     }
 }

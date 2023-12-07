@@ -12,6 +12,10 @@ public class AppUser {
 
     private String name;
 
+
+
+    private String password;
+
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "appUser", cascade = CascadeType.ALL)
     private List<Note> notes;
 
@@ -37,5 +41,12 @@ public class AppUser {
 
     public void setNotes(List<Note> notes) {
         this.notes = notes;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+    public String getPassword() {
+        return password;
     }
 }
