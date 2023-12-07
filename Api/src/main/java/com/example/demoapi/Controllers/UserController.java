@@ -1,45 +1,54 @@
 package com.example.demoapi.Controllers;
 
+import com.example.demoapi.Models.Dtos.AppUserCreateDTO;
+import com.example.demoapi.Models.Dtos.AppUserReadDTO;
+import com.example.demoapi.Models.Dtos.AppUserUpdateDTO;
 import com.example.demoapi.Service.UserService;
-import com.example.demoapi.Models.AppUser;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
+@RequestMapping("/users")
 public class UserController {
 
-    private final UserService simpleService;
+    private final UserService userService;
 
     @Autowired
-    public UserController(UserService simpleService) {
-        this.simpleService = simpleService;
+    public UserController(UserService userService) {
+        this.userService = userService;
     }
 
     @GetMapping
-    public List<AppUser> getItems() {
-        return simpleService.getAllItems();
+    public ResponseEntity<List<AppUserReadDTO>> getAllUsers() {
+        List<AppUserReadDTO> users = userService.getAllItems();
+        return ResponseEntity.ok().body(users);
     }
 
-    @GetMapping("/{index}")
-    public Optional<AppUser> getItem(@PathVariable Long index) {
-        return simpleService.getItem(index);
+    @GetMapping("/{id}")
+    public ResponseEntity<AppUserReadDTO> getUser(@PathVariable Long id) {
+        return userService.getItem(id)
+                .map(user -> ResponseEntity.ok().body(user))
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PostMapping
-    public void addItem(@RequestBody AppUser item) {
-        simpleService.addItem(item);
+    public ResponseEntity<AppUserReadDTO> addUser(@RequestBody AppUserCreateDTO appUserCreateDTO) {
+        AppUserReadDTO newUser = userService.addItem(appUserCreateDTO);
+        return ResponseEntity.ok().body(newUser);
     }
 
-    @PutMapping("/{index}")
-    public void updateItem(@PathVariable Long index, @RequestBody AppUser newItem) {
-        simpleService.updateUser(index, newItem);
+    @PutMapping("/{id}")
+    public ResponseEntity<AppUserReadDTO> updateUser(@PathVariable Long id, @RequestBody AppUserUpdateDTO appUserUpdateDTO) {
+        AppUserReadDTO updatedUser = userService.updateUser(id, appUserUpdateDTO);
+        return ResponseEntity.ok().body(updatedUser);
     }
 
-    @DeleteMapping("/{index}")
-    public void deleteItem(@PathVariable Long index) {
-        simpleService.deleteUser(index);
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
+        userService.deleteUser(id);
+        return ResponseEntity.ok().build();
     }
 }

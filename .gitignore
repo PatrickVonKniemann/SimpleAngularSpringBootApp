@@ -1,0 +1,12 @@
+
+.idea/
+
+Api/.gradle/8.4/checksums/
+
+Api/.gradle/8.4/executionHistory/
+
+Api/.gradle/8.4/fileHashes/
+
+*.lock
+
+Api/.gradle/

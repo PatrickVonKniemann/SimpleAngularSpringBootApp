@@ -1,13 +1,14 @@
 package com.example.demoapi.Controllers;
+import com.example.demoapi.Models.Dtos.NoteReadDTO;
+import com.example.demoapi.Models.Dtos.NoteCreateDTO;
+import com.example.demoapi.Models.Dtos.NoteUpdateDTO;
 
-import com.example.demoapi.Models.Note;
 import com.example.demoapi.Service.NoteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/notes")
@@ -22,29 +23,30 @@ public class NoteController {
 
     // Get all notes
     @GetMapping
-    public List<Note> getAllNotes() {
-        return noteService.getAllNotes();
+    public ResponseEntity<List<NoteReadDTO>> getAllNotes() {
+        List<NoteReadDTO> notes = noteService.getAllNotes();
+        return ResponseEntity.ok().body(notes);
     }
 
     // Get a single note by ID
     @GetMapping("/{id}")
-    public ResponseEntity<Note> getNoteById(@PathVariable Long id) {
-        Optional<Note> note = noteService.getNoteById(id);
-        return note.map(value -> ResponseEntity.ok().body(value))
+    public ResponseEntity<NoteReadDTO> getNoteById(@PathVariable Long id) {
+        return noteService.getNoteById(id)
+                .map(note -> ResponseEntity.ok().body(note))
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     // Create a new note
     @PostMapping
-    public ResponseEntity<Note> createNote(@RequestBody Note note) {
-        Note newNote = noteService.addNote(note);
+    public ResponseEntity<NoteReadDTO> createNote(@RequestBody NoteCreateDTO noteCreateDTO) {
+        NoteReadDTO newNote = noteService.addNote(noteCreateDTO);
         return ResponseEntity.ok().body(newNote);
     }
 
     // Update an existing note
     @PutMapping("/{id}")
-    public ResponseEntity<Note> updateNote(@PathVariable Long id, @RequestBody Note noteDetails) {
-        Note updatedNote = noteService.updateNote(id, noteDetails);
+    public ResponseEntity<NoteReadDTO> updateNote(@PathVariable Long id, @RequestBody NoteUpdateDTO noteUpdateDTO) {
+        NoteReadDTO updatedNote = noteService.updateNote(id, noteUpdateDTO);
         return ResponseEntity.ok().body(updatedNote);
     }
 
