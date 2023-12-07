@@ -12,7 +12,7 @@ public class AppUser {
 
     private String name;
 
-    @OneToMany(mappedBy = "appUser", cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "appUser", cascade = CascadeType.ALL)
     private List<Note> notes;
 
     public Long getId() {

@@ -1,10 +1,12 @@
 package com.example.demoapi.Service;
 
+import com.example.demoapi.Models.AppUser;
 import com.example.demoapi.Models.Dtos.NoteCreateDTO;
 import com.example.demoapi.Models.Dtos.NoteReadDTO;
 import com.example.demoapi.Models.Dtos.NoteUpdateDTO;
 import com.example.demoapi.Repository.NoteRepository;
 import com.example.demoapi.Models.Note;
+import com.example.demoapi.Repository.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,9 +17,11 @@ import java.util.stream.Collectors;
 public class NoteService {
 
     private final NoteRepository noteRepository;
+    private final UserRepository userRepository;
 
-    public NoteService(NoteRepository noteRepository) {
+    public NoteService(NoteRepository noteRepository, UserRepository userRepository) {
         this.noteRepository = noteRepository;
+        this.userRepository = userRepository;
     }
 
     // Get all notes
@@ -35,10 +39,14 @@ public class NoteService {
 
     // Add a new note
     public NoteReadDTO addNote(NoteCreateDTO noteCreateDTO) {
+        AppUser appUser = userRepository.findById(noteCreateDTO.getAppUserId())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
         Note note = new Note();
         note.setContent(noteCreateDTO.getContent());
-        // Set other fields if necessary...
+        note.setAppUser(appUser); // Set the AppUser to the Note
         Note savedNote = noteRepository.save(note);
+
         return convertToReadDTO(savedNote);
     }
 

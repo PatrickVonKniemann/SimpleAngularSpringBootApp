@@ -3,6 +3,8 @@ package com.example.demoapi.Service;
 import com.example.demoapi.Models.Dtos.AppUserCreateDTO;
 import com.example.demoapi.Models.Dtos.AppUserReadDTO;
 import com.example.demoapi.Models.Dtos.AppUserUpdateDTO;
+import com.example.demoapi.Models.Dtos.NoteReadDTO;
+import com.example.demoapi.Models.Note;
 import com.example.demoapi.Repository.UserRepository;
 import com.example.demoapi.Models.AppUser;
 import org.springframework.stereotype.Service;
@@ -51,9 +53,18 @@ public class UserService {
     }
 
     private AppUserReadDTO convertToReadDTO(AppUser appUser) {
-        AppUserReadDTO dto = new AppUserReadDTO();
-        dto.setId(appUser.getId());
-        dto.setName(appUser.getName());
-        return dto;
+        List<NoteReadDTO> noteReadDTOs = appUser.getNotes().stream()
+                .map(this::convertNoteToReadDTO)
+                .collect(Collectors.toList());
+
+        return new AppUserReadDTO(appUser.getId(), appUser.getName(), noteReadDTOs);
     }
+
+    private NoteReadDTO convertNoteToReadDTO(Note note) {
+        NoteReadDTO noteReadDTO = new NoteReadDTO();
+        noteReadDTO.setId(note.getId());
+        noteReadDTO.setContent(note.getContent());
+        return noteReadDTO;
+    }
+
 }

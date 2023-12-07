@@ -10,7 +10,7 @@ public class Note {
 
     private String content;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id", nullable = false)
     private AppUser appUser;
 
@@ -34,7 +34,8 @@ public class Note {
         return appUser;
     }
 
-    public void setUser(AppUser appUser) {
+
+    public void setAppUser(AppUser appUser) {
         this.appUser = appUser;
     }
 }
